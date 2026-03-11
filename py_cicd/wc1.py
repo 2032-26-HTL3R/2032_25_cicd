@@ -19,11 +19,11 @@ def count(text):
     1
     >>> count("ein erster Text")
     3
-    >>> count("ein <html>eins</html> zwei")
+    >>> count("ein <html>eins zwei")
     3
     """
     sauber = re.sub(r'<[^>]*>', '', text)
-    words = re.findAll(r'[a-zA-Z]+', sauber)
+    words = re.findall(r'[a-zA-Z]+', sauber)
     return len(words)
 
 

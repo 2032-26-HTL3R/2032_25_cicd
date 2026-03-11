@@ -5,6 +5,8 @@ __version__ = "1.2.1"
 __license__ = "GNU GPLv3"
 __status__ = "Released"
 
+import re
+
 def count(text):
     """
     Zählt die Anzahl der Wörter in einem gegebenen Text
@@ -18,6 +20,7 @@ def count(text):
     >>> count("ein erster Text")
     3
     """
+    clean_text = re.sub(r'<[^>]*>', '', text)
     words = text.split()
     return len(words)
 

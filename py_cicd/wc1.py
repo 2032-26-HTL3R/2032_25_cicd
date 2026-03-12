@@ -7,23 +7,102 @@ __status__ = "Released"
 
 import re
 
+
 def count(text):
     """
-    Zählt die Anzahl der Wörter in einem gegebenen Text
-    :param text:
-    :return:
+    Zählt die Anzahl der Wörter in einem gegebenen Text.
 
-    >>> count("eins")
+    >>> count(r"")
+    0
+    >>> count(r" ")
+    0
+    >>> count(r"  ")
+    0
+
+    Normal
+
+    >>> count(r"a")
     1
-    >>> count("eins")
+    >>> count(r" a")
     1
-    >>> count("ein erster Text")
+    >>> count(r"a ")
+    1
+    >>> count(r" a ")
+    1
+
+    >>> count(r"one")
+    1
+    >>> count(r" one")
+    1
+    >>> count(r"one ")
+    1
+    >>> count(r" one ")
+    1
+    >>> count(r" one  ")
+    1
+    >>> count(r"  one ")
+    1
+    >>> count(r"  one  ")
+    1
+
+    >>> count(r"one:")
+    1
+    >>> count(r":one")
+    1
+    >>> count(r":one:")
+    1
+    >>> count(r" one  ")
+    1
+    >>> count(r" one : ")
+    1
+    >>> count(r": one :")
+    1
+    >>> count(r"ein erster Text")
     3
-    >>> count("ein <html>eins zwei")
+    >>> count(r" ein  erster   Text      ")
     3
+    >>> count(r"ein:erster.Text")
+    3
+
+    Mit HTML
+
+    >>> count(r" one  <html> ")
+    1
+    >>> count(r" one  < html> ")
+    1
+    >>> count(r" one  <html > ")
+    1
+    >>> count(r" one  < html > ")
+    1
+    >>> count(r" one <html> two<html>three <html> four")
+    4
+
+    >>> count(r" one <html> two ")
+    2
+    >>> count(r" one <html>two ")
+    2
+    >>> count(r" one<html> two ")
+    2
+    >>> count(r" one<html>two ")
+    2
+    >>> count(r' one<img alt=\\"xxx\\" > two')
+    2
+    >>> count(r' one<img alt=\\"xxx yyy\\" > two')
+    2
+
+    >>> count(r' one \\"two\\" ')
+    2
+    >>> count(r' one\\"two\\" ')
+    2
+    >>> count(r' one \\"two\\"')
+    2
+    >>> count(r' one \\"two\\"three')
+    3
+    >>> count(r' one \\"two\\" three')
+    3
+
+
     """
-    sauber = re.sub(r'<[^>]*>', '', text)
-    words = re.findall(r'[a-zA-Z]+', sauber)
+    sauber = re.sub(r"<[^>]*>", " ", text)
+    words = re.findall(r"[a-zA-Z]+", sauber)
     return len(words)
-
-

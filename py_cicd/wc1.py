@@ -101,8 +101,19 @@ def count(text):
     >>> count(r' one \\"two\\" three')
     3
 
+    HTML - trickreich
+    Achtung: das ist teilweise nicht ganz legales HTML
+
+    >>> count(r" one<html")
+    1
+    >>> count(r' one<img alt=\\"<bild>\\" > two')
+    2
+    >>> count(r' one<img alt=\\"bild>\\" > two')
+    2
+
+
 
     """
-    sauber = re.sub(r"<[^>]*>", " ", text)
+    sauber = re.sub(r"<[^>]*>?", " ", text)
     words = re.findall(r"[a-zA-Z]+", sauber)
     return len(words)

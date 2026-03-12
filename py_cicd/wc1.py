@@ -10,8 +10,8 @@ import re
 
 def count(text: str) -> int:
     """
-    Zählt die Anzahl der Wörter in einem gegebenen Text.
-
+    Zählt die Anzahl der Wörter im Text
+    HTML Tags werden ignoriert und Wörter bestehen nur aus A-Z bzw. a-z
     >>> count(r"")
     0
     >>> count(r" ")
@@ -145,9 +145,18 @@ def count(text: str) -> int:
                 sauberer_text.append(text[position])
             position += 1
         else:
-            if text.startswith(r"\"", position):
-                ist_in_anfuehrung = not ist_in_anfuehrung
-                position += 2
+            if text[position] == '"':
+                anzahl_backslashes = 0
+                pruef_position = position - 1
+
+                while pruef_position >= 0 and text[pruef_position] == "\\":
+                    anzahl_backslashes += 1
+                    pruef_position -= 1
+
+                if anzahl_backslashes % 4 == 1:
+                    ist_in_anfuehrung = not ist_in_anfuehrung
+
+                position += 1
             elif text[position] == ">" and not ist_in_anfuehrung:
                 ist_im_tag = False
                 sauberer_text.append(" ")

@@ -8,7 +8,7 @@ __status__ = "Released"
 import re
 
 
-def count(text):
+def count(text: str) -> int:
     """
     Zählt die Anzahl der Wörter in einem gegebenen Text.
 
@@ -18,8 +18,6 @@ def count(text):
     0
     >>> count(r"  ")
     0
-
-    Normal
 
     >>> count(r"a")
     1
@@ -64,8 +62,6 @@ def count(text):
     >>> count(r"ein:erster.Text")
     3
 
-    Mit HTML
-
     >>> count(r" one  <html> ")
     1
     >>> count(r" one  < html> ")
@@ -85,35 +81,78 @@ def count(text):
     2
     >>> count(r" one<html>two ")
     2
-    >>> count(r' one<img alt=\\"xxx\\" > two')
+    >>> count(r" one<img alt=\\"xxx\\" > two")
     2
-    >>> count(r' one<img alt=\\"xxx yyy\\" > two')
+    >>> count(r" one<img alt=\\"xxx yyy\\" > two")
     2
 
-    >>> count(r' one \\"two\\" ')
+    >>> count(r" one \\"two\\" ")
     2
-    >>> count(r' one\\"two\\" ')
+    >>> count(r" one\\"two\\" ")
     2
-    >>> count(r' one \\"two\\"')
+    >>> count(r" one \\"two\\"")
     2
-    >>> count(r' one \\"two\\"three')
+    >>> count(r" one \\"two\\"three")
     3
-    >>> count(r' one \\"two\\" three')
+    >>> count(r" one \\"two\\" three")
     3
-
-    HTML - trickreich
-    Achtung: das ist teilweise nicht ganz legales HTML
 
     >>> count(r" one<html")
     1
-    >>> count(r' one<img alt=\\"<bild>\\" > two')
+
+    >>> count(r" one<img alt=\\"<bild>\\" > two")
     2
-    >>> count(r' one<img alt=\\"bild>\\" > two')
+    >>> count(r" one<img alt=\\"bild>\\" > two")
+    2
+    >>> count(r" one<img alt=\\"<bild>\\" keinwort> two")
+    2
+    >>> count(r" one<img alt=\\"<bild>\\" src=\\"bild.png\\" >two")
+    2
+    >>> count(r" one<img alt=\\"<bild\\" keinwort>two")
     2
 
+    >>> count(r" one<img alt=\\"<bild\\" keinwort")
+    1
+    >>> count(r" one<img alt=\\"<bild\\" keinwort> two")
+    2
+    >>> count(r" one<img alt=\\"<bild keinwort> keinwort")
+    1
+    >>> count(r" one<img alt=\\"<bild keinwort keinwort\\">two")
+    2
+    >>> count(r" one<img alt=\\"<bild keinwort< keinwort\\">two")
+    2
 
+    >>> count(r" one<img alt=\\"<bild \\\\\\" keinwort> keinwort\\" keinwort>two")
+    2
+    >>> count(r" one<img alt=\\"<bild \\\\\\" keinwort<keinwort\\" keinwort>two")
+    2
+    >>> count(r" one<img alt=\\"<bild \\\\\\" keinwort keinwort\\" keinwort>two")
+    2
 
+    >>> count(r" \\\\\\"null\\\\\\" one<img alt=\\"<bild \\\\\\" keinwort keinwort\\" keinwort>two \\"three\\"")
+    4
     """
-    sauber = re.sub(r'<([^">]|"[^"]*")*(>|$)', " ", text)
-    words = re.findall(r"[a-zA-Z]+", sauber)
-    return len(words)
+    sauberer_text = []
+    position = 0
+    ist_im_tag = False
+    ist_in_anfuehrung = False
+
+    while position < len(text):
+        if not ist_im_tag:
+            if text[position] == "<":
+                ist_im_tag = True
+            else:
+                sauberer_text.append(text[position])
+            position += 1
+        else:
+            if text.startswith(r"\"", position):
+                ist_in_anfuehrung = not ist_in_anfuehrung
+                position += 2
+            elif text[position] == ">" and not ist_in_anfuehrung:
+                ist_im_tag = False
+                sauberer_text.append(" ")
+                position += 1
+            else:
+                position += 1
+
+    return len(re.findall(r"[A-Za-z]+", "".join(sauberer_text)))

@@ -114,6 +114,6 @@ def count(text):
 
 
     """
-    sauber = re.sub(r"<[^>]*>?", " ", text)
+    sauber = re.sub(r'<([^">]|"[^"]*")*(>|$)', " ", text)
     words = re.findall(r"[a-zA-Z]+", sauber)
     return len(words)
